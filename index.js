@@ -8,19 +8,16 @@ app.use(express.json());
 
 app.post('/split-payments/compute', (req, res) => {
    let { ID, Amount, Currency, CustomerEmail, SplitInfo } = req.body;
-//    let InitialBalance = Amount;
 
-    // console.log(req.body);
-    // console.log(SplitInfo);
-    // console.log(SplitInfo[0]);
-
+   
+    // Declare global scope variables
     let NewBalance;
     let SplitBreakdown = [];
-    // let item = {};
+    let TotalRatio = 0;
     
+    // Calculation for FLAT
     SplitInfo.forEach((el) => {
         let item = {};
-        // let NewBalance;
 
         if (el.SplitType === 'FLAT') {
             let SplitAmount = el.SplitValue;
@@ -36,17 +33,10 @@ app.post('/split-payments/compute', (req, res) => {
             SplitBreakdown.push(item);
         }
 
-        // console.log(NewBalance);
-        
-        // if (el.SplitType === 'RATIO') {
-        //     let OpeningRatioBalance = Amount;
-        //     totalRatio = 
-        // }
     });
     
-    // console.log(NewBalance);
-    // console.log(Amount);
-
+   
+    // Calculation for PERCENTAGE
     SplitInfo.forEach( el => {
         let item = {};
 
@@ -63,22 +53,40 @@ app.post('/split-payments/compute', (req, res) => {
         }
     });
 
-    SplitInfo.forEach( el => {
+    // Filter SplitType of RATIO
+    let RatioFields = SplitInfo.filter(item => {
+
+        return item.SplitType === 'RATIO';
+        
+    });
+
+    // Calculate the total ratio in the payload
+    RatioFields.forEach( el => {
+        TotalRatio = TotalRatio + el.SplitValue;
+    });
+
+    // console.log(TotalRatio);
+
+    // Calculation for RATIOS
+    RatioFields.forEach((el, index) => {
         let item = {};
-        let SplitRatio = 0;
+        let SplitAmount = (el.SplitValue / TotalRatio) * Amount;
 
-        if (el.SplitType === 'RATIO') {
-            
-            SplitRatio = SplitRatio + el.SplitValue;
-            console.log(SplitRatio);
-            // console.log(el.SplitValue);
+        // Start subtracting the SplitAmount from the Amount used in calculation
+        if (index = 0) {
+            NewBalance = Amount - SplitAmount;
         }
-        // console.log(SplitRatio);
+        NewBalance = NewBalance - SplitAmount;
 
-    })
+        item.SplitEntityId = el.SplitEntityId;
+        item.Amount = SplitAmount;
 
-    console.log(SplitBreakdown);
+        SplitBreakdown.push(item);
 
+    });
+    
+
+    // console.log(SplitBreakdown);
 
     res.status(200).json({
        ID,
