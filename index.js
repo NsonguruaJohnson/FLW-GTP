@@ -96,6 +96,14 @@ app.post('/split-payments/compute', (req, res) => {
 
 });
 
+app.get('/', (req, res) => {
+    res.status(200).json({
+        status: 'success',
+        message: 'Welcome to the API'
+    });
+
+});
+
 app.listen(port, () => {
     console.log(`App running on port ${port}`);
 });
