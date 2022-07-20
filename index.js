@@ -35,25 +35,47 @@ app.post('/split-payments/compute', (req, res) => {
             // console.log(item);
             SplitBreakdown.push(item);
         }
-        
-        // if (el.SplitType === 'PERCENTAGE') {
-        //     let SplitAmount = (el.SplitValue * Amount) / 100
-        //     NewBalance = Amount - SplitAmount;
 
-        //     item.SplitEntityId = el.SplitEntityId;
-        //     item.Amount = SplitAmount;
-
-        //     Amount = NewBalance;
-
-        //     SplitBreakdown.push(item);
-        // }
+        // console.log(NewBalance);
         
         // if (el.SplitType === 'RATIO') {
         //     let OpeningRatioBalance = Amount;
         //     totalRatio = 
         // }
-
     });
+    
+    // console.log(NewBalance);
+    // console.log(Amount);
+
+    SplitInfo.forEach( el => {
+        let item = {};
+
+        if (el.SplitType === 'PERCENTAGE') {
+            let SplitAmount = (el.SplitValue * Amount) / 100
+            NewBalance = Amount - SplitAmount;
+
+            item.SplitEntityId = el.SplitEntityId;
+            item.Amount = SplitAmount;
+
+            Amount = NewBalance;
+
+            SplitBreakdown.push(item);
+        }
+    });
+
+    SplitInfo.forEach( el => {
+        let item = {};
+        let SplitRatio = 0;
+
+        if (el.SplitType === 'RATIO') {
+            
+            SplitRatio = SplitRatio + el.SplitValue;
+            console.log(SplitRatio);
+            // console.log(el.SplitValue);
+        }
+        // console.log(SplitRatio);
+
+    })
 
     console.log(SplitBreakdown);
 
@@ -63,14 +85,6 @@ app.post('/split-payments/compute', (req, res) => {
        Balance: NewBalance,
        SplitBreakdown
     });
-
-
-    // for (i = 0; i < SplitInfo.length; i++) {
-    //     // console.log(SplitInfo[i]);
-    //     newBalance = InitialBalance - SplitInfo[i].SplitValue;
-    //     console.log(newBalance);
-    //     InitialBalance = newBalance;
-    // }
 
 });
 
