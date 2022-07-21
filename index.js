@@ -7,7 +7,7 @@ const port = process.env.PORT || 7500;
 
 app.use(express.json());
 
-app.post('/split-payments/compute', (req, res) => {
+app.post('/split-payments/compute', async (req, res) => {
    let { ID, Amount, Currency, CustomerEmail, SplitInfo } = req.body;
 
    
@@ -17,7 +17,7 @@ app.post('/split-payments/compute', (req, res) => {
     let TotalRatio = 0;
     
     // Calculation for FLAT
-    SplitInfo.forEach((el) => {
+    await SplitInfo.forEach((el) => {
         let item = {};
 
         if (el.SplitType === 'FLAT') {
@@ -38,7 +38,7 @@ app.post('/split-payments/compute', (req, res) => {
     
    
     // Calculation for PERCENTAGE
-    SplitInfo.forEach( el => {
+    await SplitInfo.forEach( el => {
         let item = {};
 
         if (el.SplitType === 'PERCENTAGE') {
@@ -69,7 +69,7 @@ app.post('/split-payments/compute', (req, res) => {
     // console.log(TotalRatio);
 
     // Calculation for RATIOS
-    RatioFields.forEach((el, index) => {
+    await RatioFields.forEach((el, index) => {
         let item = {};
         let SplitAmount = (el.SplitValue / TotalRatio) * Amount;
 
@@ -97,9 +97,9 @@ app.post('/split-payments/compute', (req, res) => {
 
 });
 
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     // return "<h1> Hello World</h1>";
-    res.send("<h1> Hello World</h1>");
+    await res.send("<h1> Hello World</h1>");
 
     // res.status(200).json({
     //     status: 'success',
